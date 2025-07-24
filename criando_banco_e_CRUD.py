@@ -93,11 +93,17 @@ def deleta_usuario(id):
 if __name__ == '__main__':
     # Create
 
-    # cria_usuarios(
-    #     'Leonardo Pinheiro',
-    #     senha='minha_senha',
-    #     email='meuemail.com'
-    # )
+    cria_usuarios(
+        'Leonardo Pinheiro de Souza',
+        senha='leo',
+        email='meuemail.com'
+    )
+
+    cria_usuarios(
+        'Adriano Soares',
+        senha='adr',
+        email='meuemail.com'
+    )
 
     # Read
 
@@ -106,11 +112,11 @@ if __name__ == '__main__':
     # print(usuario_0)
     # print(usuario_0.nome, usuario_0.senha, usuario_0.email)
 
-    usuario_leonardo = le_usuario_id(id=1)
+    # usuario_leonardo = le_usuario_id(id=1)
     # print(usuario_leonardo)
     # print(usuario_leonardo.nome, usuario_leonardo.senha, usuario_leonardo.email)
-    print(usuario_leonardo.verifica_senha('minha_senha')) # retorna True
-    print(usuario_leonardo.verifica_senha('fsdgfsdads')) # retorna False
+    # print(usuario_leonardo.verifica_senha('minha_senha')) # retorna True
+    # print(usuario_leonardo.verifica_senha('fsdgfsdads')) # retorna False
 
     # Update
 
