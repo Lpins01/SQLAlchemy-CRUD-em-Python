@@ -52,19 +52,60 @@ def le_usuario_id(id):
         usuario = session.execute(comando_sql).fetchall()
         return usuario[0][0]
 
+# Aula 5 - parte final do CRUD (Update + Delete)
+
+def modifica_usuario(id, **kwargs):
+    with Session(bind=engine) as session:
+        comando_sql = select(Usuario).filter_by(id=id)
+        usuarios = session.execute(comando_sql).fetchall()
+        for usuario in usuarios:
+            for key, value in kwargs.items(): # com o uso de kwargs as verificacoes comentadas nao sao necessarias
+                setattr(usuario[0], key, value)
+            # if nome:
+            #     usuario[0].nome = nome
+            # if senha:
+            #     usuario[0].senha = senha
+            # if email:
+            #     usuario[0].email = email
+            # if not acesso_gestor is None: # preciso colocar dessa forma por ser um valor booleano
+            #     usuario[0].acesso_gestor = acesso_gestor
+        session.commit()
+
+def deleta_usuario(id):
+    with Session(bind=engine) as session:
+        comando_sql = select(Usuario).filter_by(id=id)
+        usuarios = session.execute(comando_sql).fetchall()
+        for usuario in usuarios:
+            session.delete(usuario[0])
+        session.commit()
 
 if __name__ == '__main__':
+    # Create
+
     # cria_usuarios(
     #     'Leonardo Pinheiro',
     #     senha='minha_senha',
     #     email='meuemail.com'
     # )
 
+    # Read
+
     # usuarios = le_usuarios()
     # usuario_0 = usuarios[0]
     # print(usuario_0)
     # print(usuario_0.nome, usuario_0.senha, usuario_0.email)
 
-    usuario_leonardo = le_usuario_id(id=1)
-    print(usuario_leonardo)
-    print(usuario_leonardo.nome, usuario_leonardo.senha, usuario_leonardo.email)
+    # usuario_leonardo = le_usuario_id(id=1)
+    # print(usuario_leonardo)
+    # print(usuario_leonardo.nome, usuario_leonardo.senha, usuario_leonardo.email)
+
+    # Update
+
+    # modifica_usuario(id=1, nome='Leonardo de Souza')
+    # modifica_usuario(id=1, email='novo_email.com')
+    # modifica_usuario(id=1, senha='nova_senha')
+    # modifica_usuario(id=1, acesso_gestor=False)
+
+    # Delete
+
+    deleta_usuario(id=2)
