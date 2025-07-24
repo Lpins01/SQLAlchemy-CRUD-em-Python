@@ -3,6 +3,8 @@ from pathlib import Path
 from sqlalchemy import create_engine, String, Boolean, select
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, Session
 
+from werkzeug.security import generate_password_hash, check_password_hash
+
 # Aula 3 - Criando tabela
 
 pasta_atual = Path(__file__).parent 
@@ -16,12 +18,18 @@ class Usuario(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True) # quando adicionarmos um novo usuario o sistema ja entende que deve atribuir um id
     nome: Mapped[str] = mapped_column(String(30)) # limitamos a quantidade de caracteres do nome
-    senha: Mapped[str] = mapped_column(String(30))
+    senha: Mapped[str] = mapped_column(String(128))
     email: Mapped[str] = mapped_column(String(30))
     acesso_gestor: Mapped[bool] = mapped_column(Boolean(), default=False)
 
     def __repr__(self):
         return f"Usuario({self.id=}, {self.nome=})"
+    
+    def define_senha(self, senha):
+        self.senha=generate_password_hash(senha)
+
+    def verifica_senha(self, senha):
+        return check_password_hash(self.senha, senha)
     
 engine = create_engine(f'sqlite:///{PATH_TO_BD}')
 Base.metadata.create_all(bind=engine) # cria todas as bases de dados linkadas a classe Base
@@ -32,10 +40,10 @@ def cria_usuarios(nome, senha, email, **kwargs):
     with Session(bind=engine) as session:
         usuario = Usuario(
             nome=nome,
-            senha=senha,
             email=email,
             **kwargs
         )
+        usuario.define_senha(senha)
         session.add(usuario)
         session.commit()
 
@@ -60,7 +68,10 @@ def modifica_usuario(id, **kwargs):
         usuarios = session.execute(comando_sql).fetchall()
         for usuario in usuarios:
             for key, value in kwargs.items(): # com o uso de kwargs as verificacoes comentadas nao sao necessarias
-                setattr(usuario[0], key, value)
+                if key == 'senha':
+                    usuario[0].define_senha(value)
+                else:
+                    setattr(usuario[0], key, value)
             # if nome:
             #     usuario[0].nome = nome
             # if senha:
@@ -95,9 +106,11 @@ if __name__ == '__main__':
     # print(usuario_0)
     # print(usuario_0.nome, usuario_0.senha, usuario_0.email)
 
-    # usuario_leonardo = le_usuario_id(id=1)
+    usuario_leonardo = le_usuario_id(id=1)
     # print(usuario_leonardo)
     # print(usuario_leonardo.nome, usuario_leonardo.senha, usuario_leonardo.email)
+    print(usuario_leonardo.verifica_senha('minha_senha')) # retorna True
+    print(usuario_leonardo.verifica_senha('fsdgfsdads')) # retorna False
 
     # Update
 
@@ -108,4 +121,4 @@ if __name__ == '__main__':
 
     # Delete
 
-    deleta_usuario(id=2)
+    # deleta_usuario(id=2)
